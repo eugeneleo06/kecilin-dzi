@@ -102,36 +102,41 @@
                 <br><br>
                 <label for="quality-input">Compression Quality (1-100):</label>
                 <input type="number" id="quality-input" name="quality" min="1" max="100" value="60">
-                <br><br>    
-                <input type="file" name="file" accept=".zip">
+                <div id="fileUpload">
+                    <br><br>    
+                    <input type="file" name="file" accept=".zip" id="fileUpload">
+                </div>
+                <input type="hidden" name="fileParam" value="{{request.args.get('filename')}}">
                 <br><br>
                 <input type="submit" value="Compress !">
             </form>
-            <br>
-            <hr>
-            <br>
-                <label>Example ZIP file structure : </label>
-                <pre>
-├── result.dzi
-└── result_files
-    ├── 0
-    │   └── 0_0.jpg
-    ├── 1
-    │   └── 0_0.jpg
-    ├── 10
-    │   └── 0_0.jpg
-    ├── 11
-    │   └── 0_0.jpg
-    ├── 12
-    │   ├── 0_0.jpg
-    │   └── 1_0.jpg
-    ...............
-    ├── 8
-    │   └── 0_0.jpg
-    ├── 9
-    │   └── 0_0.jpg
-                </pre>
 
+            <div id="guide">
+                <br>
+                <hr>
+                <br>
+                    <label>Example ZIP file structure : </label>
+                    <pre>
+    ├── result.dzi
+    └── result_files
+        ├── 0
+        │   └── 0_0.jpg
+        ├── 1
+        │   └── 0_0.jpg
+        ├── 10
+        │   └── 0_0.jpg
+        ├── 11
+        │   └── 0_0.jpg
+        ├── 12
+        │   ├── 0_0.jpg
+        │   └── 1_0.jpg
+        ...............
+        ├── 8
+        │   └── 0_0.jpg
+        ├── 9
+        │   └── 0_0.jpg
+                    </pre>
+            </div>
         </div>
     </div>
 
@@ -184,6 +189,13 @@
         keyboard: false
         });
         myModal.show();
+    </script>
+    {% endif %}
+
+    {% if request.args.get('filename') %}
+    <script>
+        document.getElementById('fileUpload').style.display = 'none';
+        document.getElementById('guide').style.display = 'none';
     </script>
     {% endif %}
 </body>

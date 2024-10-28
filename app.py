@@ -225,24 +225,35 @@ def compress():
     q = request.form.get('quality')
     filename = secure_filename(file.filename)
 
+    useParam = False
+    if request.form.get('fileParam') != "" :
+        filename = request.form.get('fileParam')
+        useParam = True
     if filename == '':
         return 'No selected file'
     
     file_path = os.path.join(BASE_DIRECTORY, filename)
-    file.save(file_path)
 
     # Extract the base name without extension for the directory
     base_name = os.path.splitext(filename)[0] + "_KECILIN_" + q
     extract_dir = os.path.join(BASE_DIRECTORY, base_name)
 
-    # Unzip the file if it’s a zip file
-    if zipfile.is_zipfile(file_path):
-        with zipfile.ZipFile(file_path, 'r') as zip_ref:
-            zip_ref.extractall(extract_dir)
-        os.remove(file_path)  # Optionally, remove the uploaded zip file after extraction
-    else:
-        return 'Uploaded file is not a ZIP archive'
-    
+    if not useParam:
+        file.save(file_path)
+        # Unzip the file if it’s a zip file
+        if zipfile.is_zipfile(file_path):
+            with zipfile.ZipFile(file_path, 'r') as zip_ref:
+                zip_ref.extractall(extract_dir)
+            os.remove(file_path)  # Optionally, remove the uploaded zip file after extraction
+        else:
+            return 'Uploaded file is not a ZIP archive'
+    else :
+        if os.path.exists(file_path):
+            # Use shutil to clone the directory and its contents
+            shutil.copytree(file_path, extract_dir)
+        else:
+            return f"The directory {extract_dir} does not exist."
+        
     # COMPRESS EVERY FILE
 
     for root, _, files in os.walk(extract_dir):
@@ -269,7 +280,7 @@ def compress():
                 print(f"Modified DZI file: {file}")
 
     flash('Your DZI File has been compressed and saved in cloud ! ')
-    return redirect(url_for('compress_page', show_modal=True))
+    return redirect(url_for('index', show_modal=True))
 
 @app.route('/upload', methods=['POST'])
 def upload_file():
