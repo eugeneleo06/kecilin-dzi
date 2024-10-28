@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KECILIN DZI</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Ubuntu:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400;1,500;1,700&display=swap" rel="stylesheet">    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC"
+        crossorigin="anonymous">
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.3.12/themes/default/style.min.css" />
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            font-family: "Ubuntu", sans-serif;
+            margin: 0;
+            height: 125vh
+        }
+
+        #header {
+            padding: 20px;
+        }
+
+        #content {
+            display: flex;
+            flex-grow: 1;
+            overflow:scroll;
+        }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+        crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/uuid/8.3.2/uuidv4.min.js"></script>
+
+</head>
+
+<body>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <div class="container-fluid">
+            <img src="{{url_for('static', filename='KECILIN.png')}}" style="width: 80px;">
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ml-auto me-auto">
+                    <!-- <li class="nav-item">
+                        <a class="nav-link active" href="/">Viewer</a>
+                    </li> -->
+                    <li class="nav-item">
+                        <a class="nav-link" href="/">File Explorer</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="compress">Compress</a>
+                    </li>
+                </ul>
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('logout') }}">Logout</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div id="header">
+        <h3 class="text-center fw-bold">Viewer</h3>
+    </div>
+
+    <div class="container-fluid">
+        <div id="openseadragon1" style="width: 800px; height: 600px">
+            <script src="{{url_for('static', filename='openseadragon/openseadragon.js')}}"></script>
+            <script type="text/javascript">
+                var viewer = OpenSeadragon({
+                    id: "openseadragon1",
+                    prefixUrl: "{{url_for('static', filename='openseadragon/images/')}}",
+                    tileSources: "{{ dzi_url }}",
+                    x: 0,
+                    y: 0
+                });
+            </script>
+        </div>
+    </div>
+
+</body>
+
+</html>

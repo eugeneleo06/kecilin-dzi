@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KECILIN DZI</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <!-- <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" rel="stylesheet"> -->
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            font-family: "Ubuntu", sans-serif;
+            margin: 0;
+            height: 100vh;
+        }
+
+        #header {
+            padding: 20px;
+        }
+
+        #content {
+            display: flex;
+            flex-grow: 1;
+            overflow: hidden;
+        }
+        /* Hide the buttons by default */
+        .action-buttons {
+            display: none;
+        }
+        /* Show buttons when hovering over a table row */
+        tr:hover .action-buttons {
+            display: inline-flex;
+        }
+        /* Set a fixed width for the Actions column */
+        td.actions-column {
+            width: 150px;  /* Adjust this width as needed */
+            text-align: center;
+        }
+        /* Ensure buttons don't take up extra space */
+        .action-buttons a, .action-buttons img {
+            margin: 2px;
+            cursor: pointer;
+        }
+        /* Adjust image size */
+        .action-buttons img {
+            width: 30px;
+        }
+        /* Set the height of each table row to 40px */
+        table tbody tr {
+            height: 70px;
+            /* max-height: 50px; */
+            overflow: hidden;
+        }
+        /* Vertically center the content within each cell */
+        table tbody td {
+            vertical-align: middle;
+            padding: 0;  /* Remove padding to ensure exact height */
+            line-height: 40px; /* Set line-height to match row height for vertical centering */
+            height: 40px; /* Ensure each cell also has a height of 40px */
+            max-height: 40px;
+            overflow: hidden;
+        }
+        /* Custom background color for folders */
+        .folder-row {
+            background-color: #f0f8ff; /* Light blue background for folders */
+        }
+        /* Drag-and-drop area styling */
+        #drop-area {
+            border: 2px dashed #007bff;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            margin-bottom: 20px;
+        }
+        #drop-area.hover {
+            background-color: #e9ecef;
+        }
+        #fileElem {
+            display: none;
+        }
+        #file-preview {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px; /* Space between cards */
+        }
+
+        .file-card {
+            position: relative;
+            background-color: #f8f9fa; /* Light background */
+            border: 1px solid #ddd; /* Subtle border */
+            border-radius: 8px; /* Rounded corners */
+            padding: 15px;
+            width: 150px; /* Fixed width */
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Light shadow */
+            transition: transform 0.2s, box-shadow 0.2s; /* Smooth transition */
+            text-align: center; /* Center content */
+        }
+
+        .file-card .remove-btn {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background-color: #ff6b6b; /* Red color for remove button */
+            border: none;
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            font-size: 14px;
+            line-height: 10px;
+            text-align: center;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .file-card .remove-btn:hover {
+            background-color: #ff4c4c; /* Darker red on hover */
+        }
+
+        .file-card:hover {
+            transform: scale(1.05); /* Slight zoom on hover */
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2); /* More prominent shadow */
+        }
+
+        .file-icon {
+            font-size: 40px; /* Large icon size */
+            color: #007bff; /* Bootstrap primary color */
+            margin-bottom: 10px;
+        }
+
+        .file-name {
+            font-weight: bold;
+            font-size: 14px;
+            margin-bottom: 8px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis; /* Ellipsis for long names */
+        }
+
+        .file-size {
+            font-size: 12px;
+            color: #6c757d; /* Bootstrap muted text color */
+        }
+
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <div class="container-fluid">
+            <img src="{{url_for('static', filename='KECILIN.png')}}" style="width: 80px;">
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ml-auto me-auto">
+                    <!-- <li class="nav-item">
+                        <a class="nav-link" href="/">Viewer</a>
+                    </li> -->
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/">File Explorer</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="compress">Compress</a>
+                    </li>
+                </ul>
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('logout') }}">Logout</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div id="header">
+        <h3 class="text-center fw-bold">File Explorer</h3>
+    </div>
+
+    <div class="container-fluid">
+        <!-- <h5>Current Directory: {{ current_path }}</h5> -->
+
+        <!-- Drag-and-Drop Area and File Input -->
+        <div id="drop-area">
+            <p>Drag and drop files here or click to upload files.</p>
+            <p>(Please upload compressed files only)</p>
+            <input type="file" id="fileElem" multiple accept=".zip">
+            <label class="btn btn-primary" for="fileElem">Browse Files</label>
+        </div>
+
+        <div id="file-preview" style="margin-top: 20px;">
+            <!-- File preview will be shown here -->
+        </div>
+        
+        <!-- Upload Button -->
+        <button id="uploadBtn" class="btn btn-success mt-3" style="display:none;">Upload Files</button>
+
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Size</th>
+                    <th>Last Modified</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in items %}
+                <tr class="{% if item.is_dir %}folder-row{% endif %}">
+                    <td>
+                        {{ item.name }}
+                    </td>
+                    <td>{{ item.size if item.size else '-' }}</td>
+                    <td>{{ item.last_modified }}</td>
+                    <td class="actions-column">
+                        <div class="action-buttons">
+                            {% if item.is_dir %}
+                            <a href="viewer?filename={{ item.name }}">
+                                <img src="{{url_for('static', filename='view.png')}}" style="width: 30px;" alt="View">
+                            </a>
+                            {% endif %}                    
+                            {% if item.is_dir %}
+                            <a href="/download?path={{ current_path }}/{{ item.name }}">
+                                <img src="{{url_for('static', filename='download.png')}}" style="width: 30px;" alt="Download">
+                            </a>
+                            {% endif %}
+                            <a href="#" class="delete-btn btn-delete" data-path="{{ current_path }}/{{ item.name }}">
+                                <img src="{{url_for('static', filename='delete.png')}}" style="width: 30px;" alt="Delete">
+                            </a>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Bootstrap Modal Structure -->
+    <div id="delete-modal" class="modal fade" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="deleteModalLabel">Confirm Delete</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <p>Are you sure you want to delete this file/folder?</p>
+            </div>
+            <div class="modal-footer">
+              <a href="#" class="btn btn-primary" data-bs-dismiss="modal">Cancel</a>
+              <a href="#" class="btn btn-danger" id="confirm-delete">Delete</a>
+            </div>
+          </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var deletePath = '';
+            var confirmDelete = document.getElementById('confirm-delete');
+            var uploadBtn = document.getElementById('uploadBtn');
+            var selectedFiles = [];
+
+            document.querySelectorAll('.delete-btn').forEach(function(btn) {
+                btn.addEventListener('click', function(event) {
+                    event.preventDefault();  // Prevent default link action
+                    deletePath = btn.getAttribute('data-path');
+                    var deleteModal = new bootstrap.Modal(document.getElementById('delete-modal'));
+                    deleteModal.show();
+                });
+            });
+
+            confirmDelete.addEventListener('click', function(event) {
+                event.preventDefault();  // Prevent default link action
+                fetch('/delete', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: 'path=' + encodeURIComponent(deletePath),
+                }).then(response => response.json()).then(data => {
+                    if (data.success) {
+                        location.reload();
+                    } else {
+                        alert('Failed to delete');
+                    }
+                });
+            });
+
+            // Drag-and-Drop Upload
+            var dropArea = document.getElementById('drop-area');
+            var fileElem = document.getElementById('fileElem');
+
+            // Prevent default drag behaviors
+            ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+                dropArea.addEventListener(eventName, preventDefaults, false);
+                document.body.addEventListener(eventName, preventDefaults, false);
+            });
+
+            // Highlight drop area when item is dragged over it
+            ['dragenter', 'dragover'].forEach(eventName => {
+                dropArea.addEventListener(eventName, () => dropArea.classList.add('hover'), false);
+            });
+
+            ['dragleave', 'drop'].forEach(eventName => {
+                dropArea.addEventListener(eventName, () => dropArea.classList.remove('hover'), false);
+            });
+
+            // Handle drop
+            dropArea.addEventListener('drop', handleDrop, false);
+
+            // Trigger file input click when drop area is clicked
+            dropArea.addEventListener('click', () => fileElem.click(), false);
+
+            // Handle file input change
+            fileElem.addEventListener('change', function() {
+                handleFiles(this.files);
+            });
+
+            // Upload button click event
+            uploadBtn.addEventListener('click', function() {
+                selectedFiles.forEach(uploadFile);
+            });
+
+            function preventDefaults(e) {
+                e.preventDefault();
+                e.stopPropagation();
+            }
+
+            function handleDrop(e) {
+                var dt = e.dataTransfer;
+                var files = dt.files;
+                handleFiles(files);
+            }
+
+            function handleFiles(files) {
+                selectedFiles = [...files];
+                if (selectedFiles.length > 0) {
+                    uploadBtn.style.display = 'inline-block'; // Show the Upload button
+                    showFilePreview(selectedFiles); // Call function to show file preview
+                }
+            }
+
+            function uploadFile(file) {
+                var url = '/upload?path={{ current_path }}';
+                var formData = new FormData();
+                formData.append('file', file);
+
+                fetch(url, {
+                    method: 'POST',
+                    body: formData
+                }).then(() => {
+                    location.reload(); // Reload the page after uploading
+                }).catch(() => {
+                    alert('Upload failed');
+                });
+            }
+
+            function showFilePreview(files) {
+                var preview = document.getElementById('file-preview');
+                preview.innerHTML = ''; // Clear previous content
+
+                files.forEach((file, index) => {
+                    var card = document.createElement('div');
+                    card.className = 'file-card';
+
+                    var icon = document.createElement('div');
+                    icon.className = 'file-icon';
+                    icon.innerHTML = getFileIcon(file.name); // Determine icon based on file type
+
+                    var name = document.createElement('div');
+                    name.className = 'file-name';
+                    name.textContent = file.name;
+
+                    var size = document.createElement('div');
+                    size.className = 'file-size';
+                    size.textContent = formatFileSize(file.size);
+
+                    // Create remove button
+                    var removeBtn = document.createElement('button');
+                    removeBtn.className = 'remove-btn';
+                    removeBtn.innerHTML = '&times;'; // X symbol
+
+                    // Add click event to remove file from preview
+                    removeBtn.addEventListener('click', function() {
+                        selectedFiles.splice(index, 1); // Remove file from array
+                        showFilePreview(selectedFiles); // Re-render preview
+                        if (selectedFiles.length === 0) {
+                            uploadBtn.style.display = 'none'; // Hide upload button if no files are left
+                        }
+                    });
+
+                    card.appendChild(icon);
+                    card.appendChild(name);
+                    card.appendChild(size);
+                    card.appendChild(removeBtn); // Append remove button to the card
+                    preview.appendChild(card);
+                });
+            }
+
+            function formatFileSize(size) {
+                if (size < 1024) return size + ' bytes';
+                if (size < 1024 * 1024) return (size / 1024).toFixed(1) + ' KB';
+                return (size / (1024 * 1024)).toFixed(1) + ' MB';
+            }
+
+            function getFileIcon(filename) {
+                const extension = filename.split('.').pop().toLowerCase();
+                switch (extension) {
+                    case 'jpg':
+                    case 'jpeg':
+                    case 'png':
+                    case 'gif':
+                        return '🖼️'; // Image icon
+                    case 'pdf':
+                        return '📄'; // PDF icon
+                    case 'doc':
+                    case 'docx':
+                        return '📄'; // Document icon
+                    case 'xls':
+                    case 'xlsx':
+                        return '📊'; // Spreadsheet icon
+                    case 'mp4':
+                    case 'mov':
+                        return '🎥'; // Video icon
+                    case 'mp3':
+                    case 'wav':
+                        return '🎵'; // Audio icon
+                    default:
+                        return '📁'; // Default icon for unknown file types
+                }
+            }
+
+        });
+    </script>
+</body>
+</html>
