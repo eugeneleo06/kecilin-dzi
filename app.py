@@ -222,6 +222,7 @@ def compress():
     if 'file' not in request.files:
         return 'No file part'
     file = request.files['file']
+    q = request.form.get('quality')
     filename = secure_filename(file.filename)
 
     if filename == '':
@@ -231,7 +232,7 @@ def compress():
     file.save(file_path)
 
     # Extract the base name without extension for the directory
-    base_name = os.path.splitext(filename)[0]
+    base_name = os.path.splitext(filename)[0] + "_KECILIN_" + q
     extract_dir = os.path.join(BASE_DIRECTORY, base_name)
 
     # Unzip the file if it’s a zip file
@@ -254,7 +255,7 @@ def compress():
                 try:
                     # Open the image and convert it to a supported format (e.g., PNG)
                     with Image.open(full_path) as img:
-                        img.save(full_path_webp, format="WEBP", quality=60, optimize=True)
+                        img.save(full_path_webp, format="WEBP", quality=q, optimize=True)
 
                     os.remove(full_path)
                     print(f"Compressed {full_path} to {full_path_webp}")
@@ -389,5 +390,5 @@ def modify_dzi_file(dzi_path):
 
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=81, debug=True)
+    app.run(host="0.0.0.0", port=5001, debug=True)
 

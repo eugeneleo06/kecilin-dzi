@@ -100,7 +100,11 @@
             <form action="compress" method="POST" enctype="multipart/form-data" id="dzi-form">
                 <label>Upload your original file (.zip) : </label>
                 <br><br>
+                <label for="quality-input">Compression Quality (1-100):</label>
+                <input type="number" id="quality-input" name="quality" min="1" max="100" value="60">
+                <br><br>    
                 <input type="file" name="file" accept=".zip">
+                <br><br>
                 <input type="submit" value="Compress !">
             </form>
             <br>
